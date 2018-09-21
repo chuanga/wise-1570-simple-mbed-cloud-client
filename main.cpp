@@ -20,15 +20,25 @@
 #include "simple-mbed-cloud-client.h"
 #include "SDBlockDevice.h"
 #include "FATFileSystem.h"
-#include "EthernetInterface.h"
+//#include "LittleFileSystem.h"
+#include "EasyCellularConnection.h"
+#include "mbed-trace/mbed_trace.h"
+
+
+#define RETRY_COUNT 3
+
+
+// Connect to the internet (DHCP is expected to be on)
+EasyCellularConnection net;
 
 // An event queue is a very useful structure to debounce information between contexts (e.g. ISR and normal threads)
 // This is great because things such as network operations are illegal in ISR, so updating a resource in a button's fall() function is not allowed
 EventQueue eventQueue;
 
 // Storage implementation definition, currently using SDBlockDevice (SPI flash, DataFlash, and internal flash are also available)
-SDBlockDevice sd(PTE3, PTE1, PTE2, PTE4);
+SDBlockDevice sd(PA_7, PA_6, PA_5 , PA_4);
 FATFileSystem fs("sd", &sd);
+//LittleFileSystem fs("fs", &sd);
 
 // Declaring pointers for access to Mbed Cloud Client resources outside of main()
 MbedCloudClientResource *button_res;
@@ -99,16 +109,47 @@ void registered(const ConnectorClientEndpointInfo *endpoint) {
     printf("Connected to Mbed Cloud. Endpoint Name: %s\n", endpoint->internal_endpoint_name.c_str());
 }
 
+
+nsapi_error_t do_connect()
+{
+    nsapi_error_t retcode;
+    uint8_t retry_counter = 0;
+
+    while (!net.is_connected()) {
+        printf("Trying to connect ...\n");
+	retcode = net.connect();
+	if (retcode == NSAPI_ERROR_AUTH_FAILURE) {
+	    printf("\n\nAuthentication Failure. Exiting application\n");
+	    return retcode;
+	} else if (retcode != NSAPI_ERROR_OK && retry_counter > RETRY_COUNT) {
+	    printf("\n\nFatal Connection failure: %d\n", retcode);
+	    return retcode;
+        } else if (retcode != NSAPI_ERROR_OK) {
+	    printf("\n\nCouldn't connect: %d, will retry\n", retcode);
+	    retry_counter++;
+	    continue;
+	}
+    }
+    printf("\n\nConnection Established.\n");
+    return NSAPI_ERROR_OK;
+}
+
 int main(void) {
+    nsapi_error_t status;
+
     printf("Starting Simple Mbed Cloud Client example\n");
-    printf("Connecting to the network using Ethernet...\n");
 
-    // Connect to the internet (DHCP is expected to be on)
-    EthernetInterface net;
-    nsapi_error_t status = net.connect();
+    mbed_trace_init();
 
-    if (status != 0) {
-        printf("Connecting to the network failed %d!\n", status);
+    printf("Connecting to the network using Cellular...\n");
+
+    net.modem_debug_on(MBED_CONF_APP_MODEM_TRACE);
+    net.set_sim_pin(MBED_CONF_APP_SIM_PIN_CODE);
+    net.set_credentials(MBED_CONF_APP_APN, MBED_CONF_APP_USERNAME, MBED_CONF_APP_PASSWORD);
+
+
+    if ((status = do_connect()) != NSAPI_ERROR_OK) {
+        printf("Network connection failed %d!\n", status);
         return -1;
     }
 
@@ -148,8 +189,8 @@ int main(void) {
 
     // Placeholder for callback to update local resource when GET comes.
     // The timer fires on an interrupt context, but debounces it to the eventqueue, so it's safe to do network operations
-    Ticker timer;
-    timer.attach(eventQueue.event(&fake_button_press), 5.0);
+   // Ticker timer;
+   // timer.attach(eventQueue.event(&fake_button_press), 5.0);
 
     // You can easily run the eventQueue in a separate thread if required
     eventQueue.dispatch_forever();

@@ -1,0 +1,28 @@
+diff --git a/mbed-client-pal/Source/Port/Reference-Impl/Lib_Specific/mbedTLS/TLS/pal_plat_TLS.c b/mbed-client-pal/Source/Port/Reference-Impl/Lib_Specific/mbedTLS/TLS/pal_plat_TLS.c
+index 4638d45..2f55f31 100755
+--- a/mbed-client-pal/Source/Port/Reference-Impl/Lib_Specific/mbedTLS/TLS/pal_plat_TLS.c
++++ b/mbed-client-pal/Source/Port/Reference-Impl/Lib_Specific/mbedTLS/TLS/pal_plat_TLS.c
+@@ -1059,6 +1059,11 @@ PAL_PRIVATE int palBIOSend(palTLSSocketHandle_t socket, const unsigned char *buf
+ 	}
+ 	else if (PAL_DTLS_MODE == localSocket->transportationMode)
+ 	{
++		#if defined(PAL_UDP_MTU_SIZE)
++		if(len > PAL_UDP_MTU_SIZE) {
++		    len = PAL_UDP_MTU_SIZE;
++		}
++		#endif
+ 		status = pal_sendTo(localSocket->socket, buf, len, localSocket->socketAddress, localSocket->addressLength, &sentDataSize);
+ 	}
+ 	else
+@@ -1115,6 +1120,11 @@ PAL_PRIVATE int palBIORecv(palTLSSocketHandle_t socket, unsigned char *buf, size
+ 	}
+ 	else if (PAL_DTLS_MODE == localSocket->transportationMode)
+ 	{
++		#if defined(PAL_UDP_MTU_SIZE)
++		if(len > PAL_UDP_MTU_SIZE) {
++		    len = PAL_UDP_MTU_SIZE;
++		}
++		#endif
+ 		status = pal_receiveFrom(localSocket->socket, buf, len, localSocket->socketAddress, &localSocket->addressLength, &recievedDataSize);
+ 		if (PAL_SUCCESS == status)
+ 		{
