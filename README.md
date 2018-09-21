@@ -19,13 +19,21 @@ This is a summary of the process for developers to get started and get a device 
     cd wise-1570-simple-mbed-cloud-restricted
     ```
 
-2. Download the developer certificate from Mbed Cloud.
-3. Compile and program:
+2. Apply the patch
+    ```
+    cd simple-mbed-cloud-client/mbed-cloud-client/
+    git apply ../../cloud-client_MTU_fix.diff
+    ```
+3. Download the developer certificate from Mbed Cloud.
+4. Compile and program:
 
     ```
     mbed compile -t <toolchain> -m <target> -f
     ```
-
+5. Combine the program binary with the bootloader (a pre-built bootloader for WISE-1570 has been provided for you)
+    ```
+    tools/combine_bootloader_with_app.py -b mbed-bootloader-internal.hex -m MTB_ADV_WISE_1570 -a BUILD/MTB_ADV_WISE_1570/GCC_ARM/wise-1570-simple-mbed-cloud-client-restricted.hex -o combined.hex
+    ```
 ## Porting to a new platform
 
 Please refer to the [Simple Mbed Cloud Client template application](https://github.com/ARMmbed/simple-mbed-cloud-client-template-restricted) if you want to customize the program for different platform components or another platform. 
