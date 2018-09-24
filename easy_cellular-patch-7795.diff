@@ -1,0 +1,45 @@
+diff --git a/features/cellular/easy_cellular/EasyCellularConnection.cpp b/features/cellular/easy_cellular/EasyCellularConnection.cpp
+index 79a8fd3c87..204e4b7bff 100644
+--- a/features/cellular/easy_cellular/EasyCellularConnection.cpp
++++ b/features/cellular/easy_cellular/EasyCellularConnection.cpp
+@@ -336,6 +336,16 @@ NetworkStack *EasyCellularConnection::get_stack()
+     }
+ }
+ 
++CellularDevice *EasyCellularConnection::get_device()
++{
++    return _cellularConnectionFSM->get_device();
++}
++
++UARTSerial *EasyCellularConnection::get_serial()
++{
++    return &_cellularSerial;
++}
++
+ } // namespace
+ 
+ #endif // CELLULAR_DEVICE
+diff --git a/features/cellular/easy_cellular/EasyCellularConnection.h b/features/cellular/easy_cellular/EasyCellularConnection.h
+index 396be5c5b8..036fa04a78 100644
+--- a/features/cellular/easy_cellular/EasyCellularConnection.h
++++ b/features/cellular/easy_cellular/EasyCellularConnection.h
+@@ -135,6 +135,19 @@ class EasyCellularConnection: public CellularBase {
+      *  @param plmn operator in numeric format. See more from 3GPP TS 27.007 chapter 7.3.
+      */
+     void set_plmn(const char *plmn);
++
++    /** Get the cellular device from the cellular state machine
++     *
++     * @return cellular device
++     */
++    CellularDevice *get_device();
++
++    /** Get the UART serial file handle used by cellular subsystem
++     *
++     * @return address of cellular UART serial
++     */
++    UARTSerial *get_serial();
++
+ protected:
+ 
+     /** Provide access to the NetworkStack object
