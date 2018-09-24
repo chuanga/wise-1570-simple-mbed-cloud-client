@@ -15,22 +15,28 @@ This is a summary of the process for developers to get started and get a device 
 1. Import the application into your desktop:
 
     ```
-    mbed import https://github.com/chuanga/wise-1570-simple-mbed-cloud-client-restricted
+    mbed import --protocol ssh https://github.com/chuanga/wise-1570-simple-mbed-cloud-client-restricted
     cd wise-1570-simple-mbed-cloud-restricted
     ```
 
-2. Apply the patch
+2. Apply the cloud client MTU patch
     ```
     cd simple-mbed-cloud-client/mbed-cloud-client/
     git apply ../../cloud-client_MTU_fix.diff
     ```
-3. Download the developer certificate from Mbed Cloud.
-4. Compile and program:
+3. Apply the easy-cellular patch for getting access to low-level devices (e.g. uart, power, etc.)
+   Note: this patch may not be needed in mbed os 5.10.
+    ```
+    cd mbed-os
+    git apply ../easy_cellular-patch-7795.diff
+    ```
+4. Download the developer certificate from Mbed Cloud.
+5. Compile and program:
 
     ```
-    mbed compile -t <toolchain> -m <target> -f
+    mbed compile -t GCC_ARM -m MTB_ADV_WISE_1570 -f
     ```
-5. Combine the program binary with the bootloader (a pre-built bootloader for WISE-1570 has been provided for you)
+6. Combine the program binary with the bootloader (a pre-built bootloader for WISE-1570 has been provided for you)
     ```
     tools/combine_bootloader_with_app.py -b mbed-bootloader-internal.hex -m MTB_ADV_WISE_1570 -a BUILD/MTB_ADV_WISE_1570/GCC_ARM/wise-1570-simple-mbed-cloud-client-restricted.hex -o combined.hex
     ```
@@ -88,51 +94,13 @@ See guide at [TODO]
 
 Mbed Cloud Client v1.3.x introduces a new feature called Software One-Time Programming (SOTP) that makes use of the internal flash of the MCU as an One-Time-Programmable section. It stores the keys required to decrypt the credentials stored in the persistent storage. Read more on this in the [porting documentation](https://cloud.mbed.com/docs/current/porting/changing-a-customized-porting-layer.html#rtos-module) under the RTOS module section.
 
-The flash must be divided into two sections (default 2, maximum 2) for your target. You need to modify the `mbed_app.json` file as follows:
-
-1. Add a section to the `target_overrides` with SOTP addresses and sizes.
-
-    Here is an example for the NUCLEO_L476RG board. Note that with these flash sectors, the SOTP region is placed at the last two sectors of the flash. You can find the memory map information in the reference manual of your MCU.
-
-    ```json
-        "NUCLEO_L476RG": {
-            "sotp-section-1-address"           : "(0x08000000+((1024-32)*1024))",
-            "sotp-section-1-size"              : "(16*1024)",
-            "sotp-section-2-address"           : "(0x08000000+((1024-16)*1024))",
-            "sotp-section-2-size"              : "(16*1024)",
-            "sotp-num-sections"                : 2
-        }
-    ```
-
-2. Add the macro definition to the "config" section. Note that the address and size macros are already provided. You only need to add the macro for the number of sections:
-
-    ```json
-        "sotp-num-sections": {
-            "help": "Number of SOTP sections",
-            "macro_name": "PAL_INT_FLASH_NUM_SECTIONS",
-            "value": null
-        }
-    ```
+The flash must be divided into two sections (default 2, maximum 2) for your target. You need to modify the `mbed_app.json` file to specify SOTP regions. A working version has been provided for the WISE-1570 module.
 
 ## Enabling firmware updates
 
-To enable firmware updates, a compatible bootloader needs to be added in the `tools/` folder. The process to merge the application with the bootloader currently only works when building with Mbed CLI. In the future, this combine process will be done automatically by Mbed tools.
+To enable firmware updates, a compatible bootloader needs to be added in the `tools/` folder. The process to merge the application with the bootloader currently only works when building with Mbed CLI. In the future, this combine process will be done automatically by Mbed tools. 
 
-1. Compile [mbed-bootloader](https://github.com/armmbed/mbed-bootloader) for the platform and storage configuration used in this application. Place the binary in the `tools` folder.
-
-1. Add a section to `mbed_app.json` under `target_overrides` with the bootloader configuration. For example:
-
-    ```json
-        "K64F": {
-            "target.mbed_app_start"            : "0x0000a400",
-            "update-client.bootloader-details" : "0x00007188",
-            "sotp-section-1-address"           : "(32*1024)",
-            "sotp-section-1-size"              : "( 4*1024)",
-            "sotp-section-2-address"           : "(36*1024)",
-            "sotp-section-2-size"              : "( 4*1024)",
-            "update-client.application-details": "(40*1024)"
-        }
-    ```
+A pre-built bootloader for WISE-1570 has been provided in this repository.
 
 Next, instruct your users to do the following:
 
@@ -149,10 +117,10 @@ Next, instruct your users to do the following:
 
     ```
     $ mbed compile -m YOUR_TARGET -t GCC_ARM
-    $ tools/combine_bootloader_with_app.py -m YOUR_TARGET -a BUILD/YOUR_TARGET/GCC_ARM/simple-mbed-cloud-client-example_application.bin -o combined.bin
+    $ tools/combine_bootloader_with_app.py -m YOUR_TARGET -a BUILD/YOUR_TARGET/GCC_ARM/wise-1570-simple-mbed-cloud-client-restricted.hex -o combined.hex
     ```
 
-1. Flash `combined.bin` to the development board.
+1. Flash `combined.hex` to the development board.
 1. Write down the endpoint ID of the board. You need it to start the update.
 
 Now, a firmware update can be scheduled as explained in the [Mbed Cloud documentation](https://cloud.mbed.com/docs/current/updating-firmware/index.html). You can do it with the manifest tool itself or via the Mbed Cloud portal. Here we explain how to do it with the manifest tool.
