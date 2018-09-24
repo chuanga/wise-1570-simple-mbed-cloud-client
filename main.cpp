@@ -134,6 +134,21 @@ nsapi_error_t do_connect()
     return NSAPI_ERROR_OK;
 }
 
+void get_modem_info() {
+    char rsp_buf[200]="";
+    int rsp_buf_len = 200;
+    CellularInformation *modem_info = net.get_device()->open_information(net.get_serial());
+
+    if (modem_info) {
+        modem_info->get_revision(rsp_buf, (rsp_buf_len -1));
+        printf("***********  Modem Info ***********\n");
+        printf("%s\n", rsp_buf);
+        printf("*********************** ***********\n");
+    } else {
+        printf("modem_info is NULL !!!\n");
+    }
+}
+
 int main(void) {
     nsapi_error_t status;
 
@@ -153,7 +168,8 @@ int main(void) {
         return -1;
     }
 
-    printf("Connected to the network successfully. IP address: %s\n", net.get_ip_address());
+    printf("Connected to the network successfully. ...\n");
+    get_modem_info();
 
     // SimpleMbedCloudClient handles registering over LwM2M to Mbed Cloud
     SimpleMbedCloudClient client(&net, &sd, &fs);
