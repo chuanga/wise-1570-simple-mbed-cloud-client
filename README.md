@@ -34,7 +34,7 @@ This is a summary of the process for developers to get started and get a device 
 5. Compile and program:
 
     ```
-    mbed compile -t GCC_ARM -m MTB_ADV_WISE_1570 -f
+    mbed compile -t GCC_ARM -m MTB_ADV_WISE_1570 -c
     ```
 6. Combine the program binary with the bootloader (a pre-built bootloader for WISE-1570 has been provided for you)
     ```
