@@ -15,11 +15,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // ----------------------------------------------------------------------------
+#ifndef MBED_TEST_MODE
 
 #include "mbed.h"
 #include "simple-mbed-cloud-client.h"
-#include "SDBlockDevice.h"
 #include "FATFileSystem.h"
+<<<<<<< HEAD
 //#include "LittleFileSystem.h"
 #include "EasyCellularConnection.h"
 #include "mbed-trace/mbed_trace.h"
@@ -30,17 +31,28 @@
 
 // Connect to the internet (DHCP is expected to be on)
 EasyCellularConnection net;
+=======
+>>>>>>> d801ce7b1df04cbc7f37751f582befabb03aed82
 
 // An event queue is a very useful structure to debounce information between contexts (e.g. ISR and normal threads)
 // This is great because things such as network operations are illegal in ISR, so updating a resource in a button's fall() function is not allowed
 EventQueue eventQueue;
 
+<<<<<<< HEAD
 // Storage implementation definition, currently using SDBlockDevice (SPI flash, DataFlash, and internal flash are also available)
 SDBlockDevice sd(PA_7, PA_6, PA_5 , PA_4);
 FATFileSystem fs("sd", &sd);
 //LittleFileSystem fs("fs", &sd);
+=======
+// Default block device
+BlockDevice *bd = BlockDevice::get_default_instance();
+FATFileSystem fs("fs");
+>>>>>>> d801ce7b1df04cbc7f37751f582befabb03aed82
 
-// Declaring pointers for access to Mbed Cloud Client resources outside of main()
+// Default network interface object
+NetworkInterface *net = NetworkInterface::get_default_instance();
+
+// Declaring pointers for access to Pelion Device Management Client resources outside of main()
 MbedCloudClientResource *button_res;
 MbedCloudClientResource *pattern_res;
 
@@ -106,7 +118,7 @@ void button_callback(MbedCloudClientResource *resource, const NoticationDelivery
  * @param endpoint Information about the registered endpoint such as the name (so you can find it back in portal)
  */
 void registered(const ConnectorClientEndpointInfo *endpoint) {
-    printf("Connected to Mbed Cloud. Endpoint Name: %s\n", endpoint->internal_endpoint_name.c_str());
+    printf("Connected to Pelion Device Management. Endpoint Name: %s\n", endpoint->internal_endpoint_name.c_str());
 }
 
 
@@ -150,6 +162,7 @@ void get_modem_info() {
 }
 
 int main(void) {
+<<<<<<< HEAD
     nsapi_error_t status;
 
     printf("Starting Simple Mbed Cloud Client example\n");
@@ -170,12 +183,26 @@ int main(void) {
 
     printf("Connected to the network successfully. ...\n");
     get_modem_info();
+=======
+    printf("Starting Simple Pelion Device Management Client example\n");
+    printf("Connecting to the network...\n");
 
-    // SimpleMbedCloudClient handles registering over LwM2M to Mbed Cloud
-    SimpleMbedCloudClient client(&net, &sd, &fs);
+    // Connect to the internet (DHCP is expected to be on)
+    nsapi_error_t status = net->connect();
+
+    if (status != NSAPI_ERROR_OK) {
+        printf("Connecting to the network failed %d!\n", status);
+        return -1;
+    }
+
+    printf("Connected to the network successfully. IP address: %s\n", net->get_ip_address());
+>>>>>>> d801ce7b1df04cbc7f37751f582befabb03aed82
+
+    // SimpleMbedCloudClient handles registering over LwM2M to Pelion Device Management
+    SimpleMbedCloudClient client(net, bd, &fs);
     int client_status = client.init();
     if (client_status != 0) {
-        printf("Initializing Mbed Cloud Client failed (%d)\n", client_status);
+        printf("Pelion Client initialization failed (%d)\n", client_status);
         return -1;
     }
 
@@ -195,12 +222,12 @@ int main(void) {
     blink_res->methods(M2MMethod::POST);
     blink_res->attach_post_callback(blink_callback);
 
-    printf("Initialized Mbed Cloud Client. Registering...\n");
+    printf("Initialized Pelion Client. Registering...\n");
 
     // Callback that fires when registering is complete
     client.on_registered(&registered);
 
-    // Register with Mbed Cloud
+    // Register with Pelion Device Management
     client.register_and_connect();
 
     // Placeholder for callback to update local resource when GET comes.
@@ -211,3 +238,4 @@ int main(void) {
     // You can easily run the eventQueue in a separate thread if required
     eventQueue.dispatch_forever();
 }
+#endif
