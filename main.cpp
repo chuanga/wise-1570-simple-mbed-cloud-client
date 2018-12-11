@@ -20,34 +20,14 @@
 #include "mbed.h"
 #include "simple-mbed-cloud-client.h"
 #include "FATFileSystem.h"
-<<<<<<< HEAD
-//#include "LittleFileSystem.h"
-#include "EasyCellularConnection.h"
-#include "mbed-trace/mbed_trace.h"
-
-
-#define RETRY_COUNT 3
-
-
-// Connect to the internet (DHCP is expected to be on)
-EasyCellularConnection net;
-=======
->>>>>>> d801ce7b1df04cbc7f37751f582befabb03aed82
 
 // An event queue is a very useful structure to debounce information between contexts (e.g. ISR and normal threads)
 // This is great because things such as network operations are illegal in ISR, so updating a resource in a button's fall() function is not allowed
 EventQueue eventQueue;
 
-<<<<<<< HEAD
-// Storage implementation definition, currently using SDBlockDevice (SPI flash, DataFlash, and internal flash are also available)
-SDBlockDevice sd(PA_7, PA_6, PA_5 , PA_4);
-FATFileSystem fs("sd", &sd);
-//LittleFileSystem fs("fs", &sd);
-=======
 // Default block device
 BlockDevice *bd = BlockDevice::get_default_instance();
-FATFileSystem fs("fs");
->>>>>>> d801ce7b1df04cbc7f37751f582befabb03aed82
+FATFileSystem fs(((const char*)PAL_FS_MOUNT_POINT_PRIMARY+1));
 
 // Default network interface object
 NetworkInterface *net = NetworkInterface::get_default_instance();
@@ -121,69 +101,7 @@ void registered(const ConnectorClientEndpointInfo *endpoint) {
     printf("Connected to Pelion Device Management. Endpoint Name: %s\n", endpoint->internal_endpoint_name.c_str());
 }
 
-
-nsapi_error_t do_connect()
-{
-    nsapi_error_t retcode;
-    uint8_t retry_counter = 0;
-
-    while (!net.is_connected()) {
-        printf("Trying to connect ...\n");
-	retcode = net.connect();
-	if (retcode == NSAPI_ERROR_AUTH_FAILURE) {
-	    printf("\n\nAuthentication Failure. Exiting application\n");
-	    return retcode;
-	} else if (retcode != NSAPI_ERROR_OK && retry_counter > RETRY_COUNT) {
-	    printf("\n\nFatal Connection failure: %d\n", retcode);
-	    return retcode;
-        } else if (retcode != NSAPI_ERROR_OK) {
-	    printf("\n\nCouldn't connect: %d, will retry\n", retcode);
-	    retry_counter++;
-	    continue;
-	}
-    }
-    printf("\n\nConnection Established.\n");
-    return NSAPI_ERROR_OK;
-}
-
-void get_modem_info() {
-    char rsp_buf[200]="";
-    int rsp_buf_len = 200;
-    CellularInformation *modem_info = net.get_device()->open_information(net.get_serial());
-
-    if (modem_info) {
-        modem_info->get_revision(rsp_buf, (rsp_buf_len -1));
-        printf("***********  Modem Info ***********\n");
-        printf("%s\n", rsp_buf);
-        printf("*********************** ***********\n");
-    } else {
-        printf("modem_info is NULL !!!\n");
-    }
-}
-
 int main(void) {
-<<<<<<< HEAD
-    nsapi_error_t status;
-
-    printf("Starting Simple Mbed Cloud Client example\n");
-
-    mbed_trace_init();
-
-    printf("Connecting to the network using Cellular...\n");
-
-    net.modem_debug_on(MBED_CONF_APP_MODEM_TRACE);
-    net.set_sim_pin(MBED_CONF_APP_SIM_PIN_CODE);
-    net.set_credentials(MBED_CONF_APP_APN, MBED_CONF_APP_USERNAME, MBED_CONF_APP_PASSWORD);
-
-
-    if ((status = do_connect()) != NSAPI_ERROR_OK) {
-        printf("Network connection failed %d!\n", status);
-        return -1;
-    }
-
-    printf("Connected to the network successfully. ...\n");
-    get_modem_info();
-=======
     printf("Starting Simple Pelion Device Management Client example\n");
     printf("Connecting to the network...\n");
 
@@ -196,7 +114,7 @@ int main(void) {
     }
 
     printf("Connected to the network successfully. IP address: %s\n", net->get_ip_address());
->>>>>>> d801ce7b1df04cbc7f37751f582befabb03aed82
+
 
     // SimpleMbedCloudClient handles registering over LwM2M to Pelion Device Management
     SimpleMbedCloudClient client(net, bd, &fs);
@@ -205,7 +123,6 @@ int main(void) {
         printf("Pelion Client initialization failed (%d)\n", client_status);
         return -1;
     }
-
     // Creating resources, which can be written or read from the cloud
     button_res = client.create_resource("3200/0/5501", "button_count");
     button_res->set_value(0);
@@ -232,8 +149,8 @@ int main(void) {
 
     // Placeholder for callback to update local resource when GET comes.
     // The timer fires on an interrupt context, but debounces it to the eventqueue, so it's safe to do network operations
-   // Ticker timer;
-   // timer.attach(eventQueue.event(&fake_button_press), 5.0);
+    Ticker timer;
+    timer.attach(eventQueue.event(&fake_button_press), 20.0);
 
     // You can easily run the eventQueue in a separate thread if required
     eventQueue.dispatch_forever();
