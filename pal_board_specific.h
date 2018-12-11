@@ -53,3 +53,5 @@
 #ifndef PAL_UDP_MTU_SIZE
 #define PAL_UDP_MTU_SIZE 1358
 #endif
+
+#define PAL_FS_MOUNT_POINT_PRIMARY "/sd"
