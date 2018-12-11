@@ -1,88 +1,113 @@
 {
     "macros": [
-        "MBEDTLS_USER_CONFIG_FILE=\"mbedTLSConfig_mbedOS.h\"",
-        "PAL_USER_DEFINED_CONFIGURATION=\"sotp_fs_config_MbedOS.h\"",
-	"PAL_BOARD_SPECIFIC_CONFIG=\"pal_board_specific.h\"",
+        "ARM_UC_USE_PAL_BLOCKDEVICE=1",
+        "MBED_CLOUD_CLIENT_UPDATE_STORAGE=ARM_UCP_FLASHIAP_BLOCKDEVICE",
         "MBED_CLIENT_USER_CONFIG_FILE=\"mbed_cloud_client_user_config.h\"",
         "MBED_CLOUD_CLIENT_USER_CONFIG_FILE=\"mbed_cloud_client_user_config.h\"",
-        "PAL_DTLS_PEER_MIN_TIMEOUT=5000",
-        "MBED_CONF_APP_MAIN_STACK_SIZE=4608",
-        "ARM_UC_USE_PAL_BLOCKDEVICE=1",
-        "MBED_CLOUD_CLIENT_UPDATE_STORAGE=ARM_UCP_FLASHIAP_BLOCKDEVICE"
+        "PAL_USER_DEFINED_CONFIGURATION=\"sotp_fs_config_MbedOS.h\"",
+        "PAL_FS_MOUNT_POINT_PRIMARY=\"/sd\"",
+        "MBEDTLS_USER_CONFIG_FILE=\"mbedTLSConfig_mbedOS.h\"",
+	"PAL_BOARD_SPECIFIC_CONFIG=\"pal_board_specific.h\"",
+        "PAL_DTLS_PEER_MIN_TIMEOUT=5000"
     ],
     "target_overrides": {
         "*": {
-            "platform.stdio-baud-rate": 115200,
-            "platform.stdio-convert-newlines": true,
-	    "lwip.ipv4-enabled"                 : true,
+	    "nanostack-hal.event_loop_thread_stack_size" : 5120,
+            "platform.stdio-baud-rate"          : 115200,
+            "platform.stdio-convert-newlines"   : true,
+	    "platform.default-serial-baud-rate" : 9600,
+            "lwip.ipv4-enabled"                 : true,
             "lwip.ipv6-enabled"                 : false,
             "lwip.ppp-enabled"                  : false,
-	    "lwip.tcp-enabled"			: true,
-            "mbed-trace.enable": false
+            "mbed-client.event-loop-size"       : 1024,
+            "mbed-client.sn-coap-duplication-max-msgs-count": 1,
+            "update-client.storage-address"     : "(1024*1024*64)",
+            "update-client.storage-size"        : "(1024*1024*2)",
+            "update-client.storage-locations"   : "1",
+            "mbed-trace.enable"                 : 0,
+	    "target.features_add"               : ["STORAGE"],
+            "target.components_add"             : ["SD"],
+            "sd.SPI_MOSI"                       : "PA_7",
+            "sd.SPI_MISO"                       : "PA_6",
+            "sd.SPI_CLK"                        : "PA_5",
+            "sd.SPI_CS"                         : "PA_4"
         },
 	"MTB_ADV_WISE_1570": {
+            "target.network-default-interface-type" : "CELLULAR",
             "target.clock_source"               : "USE_PLL_HSE_XTAL",
             "target.features_add"               : ["LWIP"],
             "target.mbed_app_start"             : "0x0800A400",
-            "target.stdio_uart_tx"              : "UART2_TX",
+	    "target.stdio_uart_tx"              : "UART2_TX",
             "target.stdio_uart_rx"              : "UART2_RX",
-            "cellular.debug-at"                 : false,
+            "cellular.debug-at"                 : true,
             "cellular.use-apn-lookup"           : false,
-            "sotp-section-1-address"           : "0x08008000",
-            "sotp-section-1-size"              : "0x1000",
-            "sotp-section-2-address"           : "0x08009000",
-            "sotp-section-2-size"              : "0x1000",
-            "sotp-num-sections"                : 2,
-	    "mbed-client.sn-coap-duplication-max-msgs-count": 1,
-	    "update-client.application-details" : "0x0800A000",
-            "update-client.bootloader-details"  : "0x08007654",
+            "nsapi.dns-response-wait-time"      : 30000,
+            "client_app.pal_dtls_peer_min_timeout" : "20000",
+            "client_app.partition_mode"         : 0,
+            "client_app.primary_partition_size" : "(1024*1024)",
+            "client_app.sotp-section-1-address" : "0x08008000",
+            "client_app.sotp-section-1-size"    : "0x1000",
+            "client_app.sotp-section-2-address" : "0x08009000",
+            "client_app.sotp-section-2-size"    : "0x1000",
+	    "mbed-client.event-loop-size"       : 1024,
+            "mbed-client.reconnection-count"    : 6,
+            "mbed-client.reconnection-interval" : 20,
+	    "mbed-client.sn-coap-duplication-max-msgs-count": 4,
+            "update-client.application-details" : "0x0800A000",
+            "update-client.bootloader-details"  : "0x0800772c",
             "update-client.storage-address"     : "(1024*1024*2)",
             "update-client.storage-size"        : "(1024*1024*2)",
             "update-client.storage-locations"   : "1",
             "update-client.storage-page"        : 1
         },
         "K64F": {
-            "sotp-section-1-address"           : "0xFE000",
-            "sotp-section-1-size"              : "0x1000",
-            "sotp-section-2-address"           : "0xFF000",
-            "sotp-section-2-size"              : "0x1000",
-            "sotp-num-sections"                : 2
+            "target.features_add"               : ["BOOTLOADER"],
+            "target.components_add"             : ["SD"],
+            "flash-start-address"               : "0x0",
+            "flash-size"                        : "(2048*1024)",
+            "sotp-section-1-address"            : "(32*1024)",
+            "sotp-section-1-size"               : "(4*1024)",
+            "sotp-section-2-address"            : "(36*1024)",
+            "sotp-section-2-size"               : "(4*1024)",
+            "sotp-num-sections"                 : 2,
+            "update-client.application-details" : "(MBED_CONF_APP_FLASH_START_ADDRESS + 40*1024)"
         },
         "K66F": {
-            "sotp-section-1-address"           : "0x1FE000",
-            "sotp-section-1-size"              : "0x1000",
-            "sotp-section-2-address"           : "0x1FF000",
-            "sotp-section-2-size"              : "0x1000",
-            "sotp-num-sections"                : 2
+            "target.features_add"               : ["BOOTLOADER"],
+            "target.components_add"             : ["SD"],
+            "flash-start-address"               : "0x0",
+            "flash-size"                        : "(2048*1024)",
+            "sotp-section-1-address"            : "(MBED_CONF_APP_FLASH_START_ADDRESS + MBED_CONF_APP_FLASH_SIZE - 2*(4*1024))",
+            "sotp-section-1-size"               : "(4*1024)",
+            "sotp-section-2-address"            : "(MBED_CONF_APP_FLASH_START_ADDRESS + MBED_CONF_APP_FLASH_SIZE - 1*(4*1024))",
+            "sotp-section-2-size"               : "(4*1024)",
+            "sotp-num-sections"                 : 2,
+            "target.bootloader_img"             : "bootloader/mbed-bootloader-K66F.bin",
+            "target.header_offset"              : "0x10000",
+            "target.app_offset"                 : "0x10400",
+            "update-client.application-details" : "(MBED_CONF_APP_FLASH_START_ADDRESS + 64*1024)"
+        },
+        "NUCLEO_F429ZI": {
+            "target.features_add"               : ["BOOTLOADER"],
+            "target.components_add"             : ["SD"],
+            "sd.SPI_MOSI"                       : "PE_6",
+            "sd.SPI_MISO"                       : "PE_5",
+            "sd.SPI_CLK"                        : "PE_2",
+            "sd.SPI_CS"                         : "PE_4",
+            "flash-start-address"               : "0x08000000",
+            "flash-size"                        : "(2048*1024)",
+            "sotp-section-1-address"            : "(MBED_CONF_APP_FLASH_START_ADDRESS + MBED_CONF_APP_FLASH_SIZE - 2*(128*1024))",
+            "sotp-section-1-size"               : "(128*1024)",
+            "sotp-section-2-address"            : "(MBED_CONF_APP_FLASH_START_ADDRESS + MBED_CONF_APP_FLASH_SIZE - 1*(128*1024))",
+            "sotp-section-2-size"               : "(128*1024)",
+            "sotp-num-sections"                 : 2,
+            "target.bootloader_img"             : "bootloader/mbed-bootloader-NUCLEO_F429ZI.bin",
+            "target.header_offset"              : "0x10000",
+            "target.app_offset"                 : "0x10400",
+            "update-client.application-details" : "(MBED_CONF_APP_FLASH_START_ADDRESS + 64*1024)"
         }
     },
     "config": {
-	"sock-type": "UDP",
-	"modem_trace": {
-	    "help": "Turns AT command trace on/off from the cellular modem, defaults to off",
-	    "value": false
- 	},
-	"trace-leve": {
-	    "help": "Options are TRACE_LEVEL_ERROR, TRACE_LEVEL_WARN, TRACE_LEVEL_INFO, TRACE_LEVEL_DEBUG",
-	    "macro_name":"MBED_TRACE_MAX_LEVEL",
-	    "value":"TRACE_LEVEL_INFO"
-	},
-	"sim-pin-code": {
-	    "help": "SIM PIN code",
-	    "value": "\"1234\""
-	},
-	"apn": {
-	    "help":"The APN string to use for this SIM/network, set to 0 if none", 
-	    "value": "\"internet\""
-        },
-	"username": {
-	    "help":"The user name string to use for this APN, set to zero if none",
-	    "value": 0
-	},
-	"password": {
-	    "help": "The password string to use for this APN, set to 0 if none",
-	    "value": 0
-	},
         "format-storage-layer-on-error": {
             "help": "Whether to format the storage layer when it cannot be read - always disable for production devices!",
             "value": 1
@@ -91,75 +116,10 @@
             "help": "Enable Developer mode to skip Factory enrollment",
             "value": 1
         },
-        "main-stack-size": {
-            "value": 6000
-        }
-    },
-    "macros": [
-        "ARM_UC_USE_PAL_BLOCKDEVICE=1",
-        "MBED_CLOUD_CLIENT_UPDATE_STORAGE=ARM_UCP_FLASHIAP_BLOCKDEVICE",
-        "MBED_CLIENT_USER_CONFIG_FILE=\"mbed_cloud_client_user_config.h\"",
-        "MBED_CLOUD_CLIENT_USER_CONFIG_FILE=\"mbed_cloud_client_user_config.h\"",
-        "PAL_FS_MOUNT_POINT_PRIMARY=\"/fs\""
-    ],
-    "target_overrides": {
-        "*": {
-            "target.features_add"               : ["BOOTLOADER"],
-            "target.components_add"             : ["SD"],
-            "platform.stdio-baud-rate"          : 115200,
-            "platform.stdio-convert-newlines"   : true,
-            "platform.stdio-buffered-serial"    : true,
-            "mbed-client.event-loop-size"       : 1024,
-            "nanostack-hal.event_loop_thread_stack_size": 8192,
-            "update-client.storage-address"     : "(1024*1024*64)",
-            "update-client.storage-size"        : "(1024*1024*2)",
-            "update-client.storage-locations"   : 1,
-            "mbed-trace.enable"                 : 0,
-            "nsapi.default-wifi-security"       : "WPA_WPA2",
-            "nsapi.default-wifi-ssid"           : "\"SSID\"",
-            "nsapi.default-wifi-password"       : "\"Password\""
-        },
-        "STM_EMAC": {
-            "lwip.pbuf-pool-size"               : 16,
-            "lwip.mem-size"                     : 12500,
-            "client_app.pal_number_of_partition": 1,
-            "client_app.partition_mode"         : 1,
-            "client_app.auto_partition"         : 1
-        },
-        "K64F": {
-            "target.network-default-interface-type" : "ETHERNET",
-            "update-client.bootloader-details"      : "0x00007188",
-            "update-client.application-details"     : "(40*1024)",
-            "client_app.sotp-section-1-address"     : "(32*1024)",
-            "client_app.sotp-section-1-size"        : "( 4*1024)",
-            "client_app.sotp-section-2-address"     : "(36*1024)",
-            "client_app.sotp-section-2-size"        : "( 4*1024)"
-        },
-        "K66F": {
-            "target.network-default-interface-type" : "ETHERNET",
-            "update-client.bootloader-details"      : "0x00007188",
-            "update-client.application-details"     : "(40*1024)",
-            "client_app.sotp-section-1-address"     : "(32*1024)",
-            "client_app.sotp-section-1-size"        : "( 4*1024)",
-            "client_app.sotp-section-2-address"     : "(36*1024)",
-            "client_app.sotp-section-2-size"        : "( 4*1024)"
-        },
-        "NUCLEO_F429ZI": {
-            "target.network-default-interface-type" : "ETHERNET",
-            "target.app_offset"                     : "0x10400",
-            "target.header_offset"                  : "0x10000",
-            "target.bootloader_img"                 : "bootloader/mbed-bootloader-F429ZI.bin",
-            "target.components_add"                 : ["SD"],
-            "update-client.bootloader-details"      : "0x080078CC",
-            "sd.SPI_MOSI"                           : "PE_6",
-            "sd.SPI_MISO"                           : "PE_5",
-            "sd.SPI_CLK"                            : "PE_2",
-            "sd.SPI_CS"                             : "PE_4",
-            "update-client.application-details"     : "(0x08000000+64*1024)",
-            "client_app.sotp-section-1-address"     : "(0x081C0000)",
-            "client_app.sotp-section-1-size"        : "(128*1024)",
-            "client_app.sotp-section-2-address"     : "(0x081E0000)",
-            "client_app.sotp-section-2-size"        : "(128*1024)"
+	"trace-level": {
+            "help": "Options are TRACE_LEVEL_ERROR,TRACE_LEVEL_WARN,TRACE_LEVEL_INFO,TRACE_LEVEL_DEBUG",
+            "macro_name": "MBED_TRACE_MAX_LEVEL",
+            "value": "TRACE_LEVEL_INFO"
         }
     }
 }
