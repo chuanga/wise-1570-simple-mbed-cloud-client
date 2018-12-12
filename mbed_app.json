@@ -39,7 +39,7 @@
             "target.mbed_app_start"             : "0x0800A400",
 	    "target.stdio_uart_tx"              : "UART2_TX",
             "target.stdio_uart_rx"              : "UART2_RX",
-            "cellular.debug-at"                 : true,
+            "cellular.debug-at"                 : false,
             "cellular.use-apn-lookup"           : false,
             "nsapi.dns-response-wait-time"      : 30000,
             "client_app.pal_dtls_peer_min_timeout" : "20000",
