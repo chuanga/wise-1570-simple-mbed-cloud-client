@@ -1,0 +1,15 @@
+--- arm_uc_http_socket_private.c	2018-12-13 00:48:52.220000000 +0800
++++ arm_uc_http_socket_private_new.c	2018-12-13 00:51:01.340000000 +0800
+@@ -202,7 +202,11 @@
+ // Internal caching of the cache-state of the DNS is broken, just use it directly.
+ bool arm_uc_dns_lookup_is_cached(void)
+ {
+-    return false;
++    if (context == NULL) {
++    	return false;
++    } else {
++	return (context->cache_address.addressType != 0) && (context->cache_address_length != 0);
++    }
+ }
+ 
+ #if (PAL_DNS_API_VERSION == 2)
