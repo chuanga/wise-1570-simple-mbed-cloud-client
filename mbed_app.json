@@ -8,7 +8,8 @@
         "PAL_FS_MOUNT_POINT_PRIMARY=\"/sd\"",
         "MBEDTLS_USER_CONFIG_FILE=\"mbedTLSConfig_mbedOS.h\"",
 	"PAL_BOARD_SPECIFIC_CONFIG=\"pal_board_specific.h\"",
-        "PAL_DTLS_PEER_MIN_TIMEOUT=5000"
+        "PAL_DTLS_PEER_MIN_TIMEOUT=5000",
+	"MBED_CONF_APP_MAIN_STACK_SIZE=5120"
     ],
     "target_overrides": {
         "*": {
@@ -37,6 +38,8 @@
             "target.clock_source"               : "USE_PLL_HSE_XTAL",
             "target.features_add"               : ["LWIP"],
             "target.mbed_app_start"             : "0x0800A400",
+	    "target.header_offset"              : "0xA000",
+	    "target.app_offset"                 : "0xA400",
 	    "target.stdio_uart_tx"              : "UART2_TX",
             "target.stdio_uart_rx"              : "UART2_RX",
             "cellular.debug-at"                 : false,
@@ -44,10 +47,10 @@
             "nsapi.dns-response-wait-time"      : 30000,
             "client_app.pal_dtls_peer_min_timeout" : "20000",
             "client_app.partition_mode"         : 0,
-            "client_app.primary_partition_size" : "(1024*1024)",
-            "client_app.sotp-section-1-address" : "0x08008000",
+            "client_app.primary_partition_size" : "(1024*1024*1024)",
+            "client_app.sotp-section-1-address" : "0x080FE000",
             "client_app.sotp-section-1-size"    : "0x1000",
-            "client_app.sotp-section-2-address" : "0x08009000",
+            "client_app.sotp-section-2-address" : "0x080FF000",
             "client_app.sotp-section-2-size"    : "0x1000",
 	    "mbed-client.event-loop-size"       : 1024,
             "mbed-client.reconnection-count"    : 6,
@@ -55,7 +58,7 @@
 	    "mbed-client.sn-coap-duplication-max-msgs-count": 4,
             "update-client.application-details" : "0x0800A000",
             "update-client.bootloader-details"  : "0x0800772c",
-            "update-client.storage-address"     : "(1024*1024*2)",
+            "update-client.storage-address"     : "(1024*1024*64)",
             "update-client.storage-size"        : "(1024*1024*2)",
             "update-client.storage-locations"   : "1",
             "update-client.storage-page"        : 1
