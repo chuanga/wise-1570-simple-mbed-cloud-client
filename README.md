@@ -22,22 +22,22 @@ This is a summary of the process for developers to get started and get a device 
 
     ```
     mbed import --protocol ssh https://github.com/chuanga/wise-1570-simple-mbed-cloud-client-restricted
-    cd wise-1570-simple-mbed-cloud-restricted
+    cd wise-1570-simple-mbed-cloud-client
     ```
-2. Download the developer certificate from Mbed Cloud.
-3. Compile and program:
+2. Download the developer certificate from Mbed Cloud
+3. Apply the dns-cache-patch-iotuc641.diff to improve FOTA download
+   cd simple-mbed-cloud-client/mbed-cloud-client/update-client-hub/modules/source-http-socket/source
+   patch -p0 dns-cache-patch-iotuc641.diff
+   
+4. Compile and program:
 
     ```
     mbed compile -t GCC_ARM -m MTB_ADV_WISE_1570 -c
     ```
-4. Combine the program binary with the bootloader (a pre-built bootloader for WISE-1570 has been provided for you)
+5. Combine the program binary with the bootloader (a pre-built bootloader for WISE-1570 has been provided for you)
     ```
-    tools/combine_bootloader_with_app.py -b mbed-bootloader-internal.hex -m MTB_ADV_WISE_1570 -a BUILD/MTB_ADV_WISE_1570/GCC_ARM/wise-1570-simple-mbed-cloud-client-restricted.hex -o combined.hex
+    tools/combine_bootloader_with_app.py -b bootloader/mbed-bootloader-WISE_1570.hex -m MTB_ADV_WISE_1570 -a BUILD/MTB_ADV_WISE_1570/GCC_ARM/wise-1570-simple-mbed-cloud-client.hex -o combined.hex
     ```
-## Porting to a new platform
-
-Please refer to the [Simple Mbed Cloud Client template application](https://github.com/ARMmbed/simple-mbed-cloud-client-template-restricted) if you want to customize the program for different platform components or another platform. 
-
 #### Update the application logic
 
 The template example uses a ticker object to periodically fire a software interrupt to simulate button presses. Let’s say you want to make an actual button press.
