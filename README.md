@@ -1,14 +1,15 @@
 # WISE-1570 Simple Mbed Cloud Client application
 
+## Pre-requisites
+
+1. Hardware:
+
+Advantech WISE-DB1505 M2.COM carrier board
+Advantech WISE-1570 sensor node with antenna [link](https://os.mbed.com/modules/advantech-wise-1570/)
+A micro USB cable
+A NB-IoT SIM
+
 ## Overview
-
-This is a template application for platform vendors. It demonstrates how to create a simple application that can connect to the Pelion IoT Platform service, register resources and get ready to receive a firmware update.
-
-It's intended to be forked and customized to add platform-specific features (such as sensors and actuators) and configure the connectivity and storage to work **out-of-the-box**. The template application works in **developer mode** by default.
-
-There is a mirror version of the stable (master) template application on [this location](https://os.mbed.com/teams/mbed-os-examples/code/mbed-cloud-example) to facilitate the fork and publish on os.mbed.com.
-
-## Table of Contents
 
 This application is customized from the simple Mbed Cloud Client application [here](https://github.com/ARMmbed/simple-mbed-cloud-client-template-restricted). It has been configured to work **out-of-the-box** for Advantech's [WISE-1570 NBIoT module](https://os.mbed.com/modules/advantech-wise-1570/). The Simple Mbed Cloud Client application works in **developer mode** by default.
 
@@ -25,18 +26,15 @@ This is a summary of the process for developers to get started and get a device 
     cd wise-1570-simple-mbed-cloud-client
     ```
 2. Download the developer certificate from Mbed Cloud
-3. Apply the dns-cache-patch-iotuc641.diff to improve FOTA download
-   cd simple-mbed-cloud-client/mbed-cloud-client/update-client-hub/modules/source-http-socket/source
-   patch -p0 dns-cache-patch-iotuc641.diff
    
-4. Compile and program:
+3. Compile and program:
 
     ```
     mbed compile -t GCC_ARM -m MTB_ADV_WISE_1570 -c
     ```
-5. Combine the program binary with the bootloader (a pre-built bootloader for WISE-1570 has been provided for you)
+4. Combine the program binary with the bootloader (a pre-built bootloader for WISE-1570 has been provided for you)
     ```
-    tools/combine_bootloader_with_app.py -b bootloader/mbed-bootloader-WISE_1570.hex -m MTB_ADV_WISE_1570 -a BUILD/MTB_ADV_WISE_1570/GCC_ARM/wise-1570-simple-mbed-cloud-client.hex -o combined.hex
+    tools/combine_bootloader_with_app.py -b bootloader/mbed-bootloader-for-WISE_1570-PDMC-2.1.0-Mbed-OS-5.11.hex -m MTB_ADV_WISE_1570 -a BUILD/MTB_ADV_WISE_1570/GCC_ARM/wise-1570-simple-mbed-cloud-client.hex -o combined.hex
     ```
 #### Update the application logic
 
