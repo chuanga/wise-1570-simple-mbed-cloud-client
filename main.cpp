@@ -19,7 +19,8 @@
 
 #include "mbed.h"
 #include "simple-mbed-cloud-client.h"
-#include "FATFileSystem.h"
+//#include "FATFileSystem.h"
+#include "LittleFileSystem.h"
 
 // An event queue is a very useful structure to debounce information between contexts (e.g. ISR and normal threads)
 // This is great because things such as network operations are illegal in ISR, so updating a resource in a button's fall() function is not allowed
@@ -27,7 +28,8 @@ EventQueue eventQueue;
 
 // Default block device
 BlockDevice *bd = BlockDevice::get_default_instance();
-FATFileSystem fs(((const char*)PAL_FS_MOUNT_POINT_PRIMARY+1));
+LittleFileSystem fs(((const char*)PAL_FS_MOUNT_POINT_PRIMARY+1));
+StorageHelper sh(bd, &fs);
 
 // Default network interface object
 NetworkInterface *net = NetworkInterface::get_default_instance();
@@ -117,6 +119,10 @@ int main(void) {
 
 
     // SimpleMbedCloudClient handles registering over LwM2M to Pelion Device Management
+    printf("PAL_FS_MOUNT_POINT_PRIMARY = %s\n", PAL_FS_MOUNT_POINT_PRIMARY);
+    // Call StorageHelper to initialize FS for us
+    sh.init();
+
     SimpleMbedCloudClient client(net, bd, &fs);
     int client_status = client.init();
     if (client_status != 0) {
