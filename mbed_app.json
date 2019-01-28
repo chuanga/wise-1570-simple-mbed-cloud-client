@@ -59,7 +59,7 @@
             "update-client.application-details" : "0x0800A000",
             "update-client.bootloader-details"  : "0x0800772c",
             "update-client.storage-address"     : "(1024*1024*2)",
-            "update-client.storage-size"        : "(1024*1024*4)",
+            "update-client.storage-size"        : "(1024*1024*2)",
             "update-client.storage-locations"   : "1",
             "update-client.storage-page"        : 1
         },
