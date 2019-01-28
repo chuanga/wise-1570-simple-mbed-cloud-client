@@ -16,12 +16,12 @@
 
 /*\brief  Starting Address for section 1 Minimum requirement size is 1KB and section must be consecutive sectors*/
 #ifndef PAL_INTERNAL_FLASH_SECTION_1_ADDRESS
-#define PAL_INTERNAL_FLASH_SECTION_1_ADDRESS    0x08008000
+#define PAL_INTERNAL_FLASH_SECTION_1_ADDRESS    0x080FE000
 #endif
 
 /*\brief  Starting Address for section 2 Minimum requirement size is 1KB and section must be consecutive sectors*/
 #ifndef PAL_INTERNAL_FLASH_SECTION_2_ADDRESS
-#define PAL_INTERNAL_FLASH_SECTION_2_ADDRESS    0x08009000
+#define PAL_INTERNAL_FLASH_SECTION_2_ADDRESS    0x080FF000
 #endif
 
 /*\brief  Size for section 1*/
