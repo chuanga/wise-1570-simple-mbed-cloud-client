@@ -31,7 +31,7 @@
             "spif-driver.SPI_MISO"              : "PA_6",
             "spif-driver.SPI_CLK"               : "PA_5",
             "spif-driver.SPI_CS"                : "PA_15",
-	    "spif-driver.SPI_FREQ"              : 20000000
+	    "spif-driver.SPI_FREQ"              : 8000000
         },
 	"MTB_ADV_WISE_1570": {
             "target.network-default-interface-type" : "CELLULAR",
