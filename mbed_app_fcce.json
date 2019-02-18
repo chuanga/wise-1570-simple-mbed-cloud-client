@@ -7,6 +7,7 @@
         "PAL_NUMBER_OF_PARTITIONS=1",
         "MCC_PLATFORM_AUTO_PARTITION=1",
         "MCC_PLATFORM_PARTITION_MODE=1",
+        "PRIMARY_PARTITION_SIZE=4194304",
         "MBED_CLIENT_USER_CONFIG_FILE=\"mbed_cloud_client_user_config.h\"",
         "MBED_CLOUD_CLIENT_USER_CONFIG_FILE=\"mbed_cloud_client_user_config.h\"",
         "FCE_SERIAL_INTERFACE"
@@ -18,7 +19,8 @@
             "platform.stdio-baud-rate": 115200,
             "platform.stdio-convert-newlines": true,
             "target.features_add": [ "BOOTLOADER", "STORAGE" ],
-            "target.components_add": ["SD"],
+            "target.components_remove": ["SD"],
+            "target.components_add": ["SPIF"],
             "mbed-trace.enable": 1,
             "update-client.storage-address": "(1024*1024*64)",
             "update-client.storage-size": "(1024*1024*2)",
@@ -30,7 +32,9 @@
             "target.features_add"               : ["LWIP"],
             "target.stdio_uart_tx"              : "UART2_TX",
             "target.stdio_uart_rx"              : "UART2_RX",
-            "target.mbed_app_start"             : "0x0800A400",
+	    "target.header_offset"              : "0xA000",
+	    "target.app_offset"                 : "0xA400",
+            "target.bootloader_img"             : "bootloader/mbed-bootloader-WISE_1570_SPI.hex",
             "sotp-section-1-address"            : "0x080FE000",
             "sotp-section-1-size"               : "0x1000",
             "sotp-section-2-address"            : "0x080FF000",
@@ -38,14 +42,15 @@
             "sotp-num-sections"                 : 2,
             "update-client.application-details" : "0x0800A000",
             "update-client.bootloader-details"  : "0x0800772c",
-            "update-client.storage-address"     : "(1024*1024*64)",
-            "update-client.storage-size"        : "(1024*1024*2)",
+            "update-client.storage-address"     : "(1024*1024*3)",
+            "update-client.storage-size"        : "(1024*1024*1)",
             "update-client.storage-locations"   : "1",
             "update-client.storage-page"        : 1,
-            "sd.SPI_MOSI"                       : "PA_7",
-            "sd.SPI_MISO"                       : "PA_6",
-            "sd.SPI_CLK"                        : "PA_5",
-            "sd.SPI_CS"                         : "PA_4"
+            "spif-driver.SPI_MOSI"              : "PA_7",
+            "spif-driver.SPI_MISO"              : "PA_6",
+            "spif-driver.SPI_CLK"               : "PA_5",
+            "spif-driver.SPI_CS"                : "PA_15",
+            "spif-driver.SPI_FREQ"              : 8000000
         },
         "K64F": {
             "lwip.tcpip-thread-stacksize": 2400,
@@ -152,3 +157,4 @@
         }
     }
 }
+
