@@ -34,7 +34,7 @@
             "target.stdio_uart_rx"              : "UART2_RX",
 	    "target.header_offset"              : "0xA000",
 	    "target.app_offset"                 : "0xA400",
-            "target.bootloader_img"             : "bootloader/mbed-bootloader-WISE_1570_SPI.hex",
+            "target.bootloader_img"             : "bootloader/mbed-bootloader-WISE_1570_RSPI_20MHZ_2M.hex",
             "sotp-section-1-address"            : "0x080FE000",
             "sotp-section-1-size"               : "0x1000",
             "sotp-section-2-address"            : "0x080FF000",
@@ -42,15 +42,15 @@
             "sotp-num-sections"                 : 2,
             "update-client.application-details" : "0x0800A000",
             "update-client.bootloader-details"  : "0x0800772c",
-            "update-client.storage-address"     : "(1024*1024*3)",
-            "update-client.storage-size"        : "(1024*1024*1)",
+            "update-client.storage-address"     : "(1024*1024*2)",
+            "update-client.storage-size"        : "(1024*1024*2)",
             "update-client.storage-locations"   : "1",
             "update-client.storage-page"        : 1,
             "spif-driver.SPI_MOSI"              : "PA_7",
             "spif-driver.SPI_MISO"              : "PA_6",
             "spif-driver.SPI_CLK"               : "PA_5",
             "spif-driver.SPI_CS"                : "PA_15",
-            "spif-driver.SPI_FREQ"              : 8000000
+            "spif-driver.SPI_FREQ"              : 20000000
         },
         "K64F": {
             "lwip.tcpip-thread-stacksize": 2400,
