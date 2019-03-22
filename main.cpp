@@ -19,8 +19,8 @@
 
 #include "mbed.h"
 #include "simple-mbed-cloud-client.h"
-//#include "FATFileSystem.h"
-#include "LittleFileSystem.h"
+#include "FATFileSystem.h"
+//#include "LittleFileSystem.h"
 
 #if defined(SENSOR_HDC1050)
 #include "hdc1050.h"
@@ -32,7 +32,8 @@ EventQueue eventQueue;
 
 // Default block device
 BlockDevice *bd = BlockDevice::get_default_instance();
-LittleFileSystem fs(((const char*)PAL_FS_MOUNT_POINT_PRIMARY+1));
+//LittleFileSystem fs(((const char*)PAL_FS_MOUNT_POINT_PRIMARY+1));
+FATFileSystem fs(((const char*)PAL_FS_MOUNT_POINT_PRIMARY+1));
 StorageHelper sh(bd, &fs);
 
 // Default network interface object
